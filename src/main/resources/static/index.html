@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Todo Management System</title>
+    <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+<h1>Todo Management System</h1>
+
+<form id="todoForm">
+    <input type="hidden" id="todoId">
+    <label>Title:</label>
+    <input type="text" id="title" required><br><br>
+    <label>Description:</label>
+    <input type="text" id="description" required><br><br>
+    <label>Target Date:</label>
+    <input type="date" id="targetDate" required><br><br>
+    <label>End Date:</label>
+    <input type="date" id="endDate" required><br><br>
+    <button type="submit">Save</button>
+</form>
+
+<br>
+
+<table id="todoTable">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Target Date</th>
+        <th>End Date</th>
+        <th>Action</th>
+    </tr>
+</table>
+
+<script>
+    const todoForm = document.getElementById('todoForm');
+    todoForm.addEventListener('submit', saveTodo);
+
+    function saveTodo(event) {
+      event.preventDefault();
+
+      const todoId = document.getElementById('todoId').value;
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const targetDate = document.getElementById('targetDate').value;
+      const endDate = document.getElementById('endDate').value;
+
+      const todo = { todoId, title, description, targetDate, endDate };
+
+      if (todoId === '') {
+        createTodo(todo);
+      } else {
+        updateTodo(todo);
+      }
+
+      clearForm();
+    }
+
+    function createTodo(todo) {
+    console.log("todo:", JSON.stringify(todo));
+      fetch('/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(todo)
+      })
+      .then(response => response.json())
+      .then(() => {
+        clearTable();
+        fetchTodos();
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    function updateTodo(todo) {
+      fetch(`/todos/${todo.todoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(todo)
+      })
+      .then(response => response.json())
+      .then(() => {
+        clearTable();
+        fetchTodos();
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    function deleteTodo(todoId) {
+      fetch(`/todos/${todoId}`, {
+        method: 'DELETE'
+      })
+      .then(() => {
+        clearTable();
+        fetchTodos();
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    function fetchTodos() {
+      fetch('/todos')
+        .then(response => response.json())
+        .then(todos => displayTodos(todos))
+        .catch(error => console.error('Error:', error));
+    }
+
+    function displayTodos(todos) {
+      const todoTable = document.getElementById('todoTable');
+
+      todos.forEach(todo => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${todo.todoId}</td>
+          <td>${todo.title}</td>
+          <td>${todo.description}</td>
+          <td>${todo.targetDate}</td>
+          <td>${todo.endDate}</td>
+          <td>
+            <button onclick="editTodo(${todo.todoId})">Edit</button>
+            <button onclick="deleteTodo(${todo.todoId})">Delete</button>
+          </td>
+        `;
+        todoTable.appendChild(row);
+      });
+    }
+
+    function editTodo(todoId) {
+      fetch(`/todos/${todoId}`)
+        .then(response => response.json())
+        .then(todo => {
+          document.getElementById('todoId').value = todo.todoId;
+          document.getElementById('title').value = todo.title;
+          document.getElementById('description').value = todo.description;
+          document.getElementById('targetDate').value = todo.targetDate;
+          document.getElementById('endDate').value = todo.endDate;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function clearForm() {
+      document.getElementById('todoId').value = '';
+      document.getElementById('title').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('targetDate').value = '';
+      document.getElementById('endDate').value = '';
+    }
+
+    function clearTable() {
+      const todoTable = document.getElementById('todoTable');
+      while (todoTable.rows.length > 1) {
+        todoTable.deleteRow(1);
+      }
+    }
+
+    fetchTodos();
+  </script>
+</body>
+</html>
