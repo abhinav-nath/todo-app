@@ -1,7 +1,8 @@
 package com.codecafe.todoapp.service;
 
-import com.codecafe.todoapp.dto.TodoDTO;
 import com.codecafe.todoapp.entity.Todo;
+import com.codecafe.todoapp.model.CreateTodoRequest;
+import com.codecafe.todoapp.model.UpdateTodoRequest;
 import com.codecafe.todoapp.repository.TodoRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,20 +25,19 @@ public class TodoService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid todo Id: " + id));
     }
 
-    public Todo createTodo(TodoDTO todoDTO) {
-        new Todo();
+    public Todo createTodo(CreateTodoRequest createTodoRequest) {
         Todo todo = Todo.builder()
-                .title(todoDTO.getTitle())
-                .description(todoDTO.getDescription())
-                .targetDate(todoDTO.getTargetDate())
+                .title(createTodoRequest.getTitle())
+                .description(createTodoRequest.getDescription())
+                .targetDate(createTodoRequest.getTargetDate())
                 .build();
         return todoRepository.save(todo);
     }
 
-    public Todo updateTodo(Long id, Todo updatedTodo) {
+    public Todo updateTodo(Long id, UpdateTodoRequest UpdateTodoRequest) {
         Todo existingTodo = todoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid todo Id: " + id));
-        BeanUtils.copyProperties(updatedTodo, existingTodo, "id");
+        BeanUtils.copyProperties(UpdateTodoRequest, existingTodo, "id");
         return todoRepository.save(existingTodo);
     }
 

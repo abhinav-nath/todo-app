@@ -1,18 +1,16 @@
-package com.codecafe.todoapp.dto;
+package com.codecafe.todoapp.model;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @ToString
-public class TodoDTO {
+public class CreateTodoRequest {
     private String title;
     private String description;
-    private Date targetDate;
-    private Date endDate;
+    private LocalDate targetDate;
 }
-
