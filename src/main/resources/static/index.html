@@ -12,7 +12,8 @@
       text-align: left;
       border-bottom: 1px solid #ddd;
     }
-  </style>
+
+    </style>
 </head>
 <body>
 <h1>Todo Management System</h1>
@@ -20,13 +21,13 @@
 <form id="todoForm">
     <input type="hidden" id="id">
     <label>Title:</label>
-    <input type="text" id="title" required><br><br>
+    <input type="text" id="title" style="margin-left:45px; width:200px" required><br><br>
     <label>Description:</label>
-    <input type="text" id="description" required><br><br>
+    <textarea id="description" style="width:200px" required></textarea><br><br>
     <label>Target Date:</label>
     <input type="date" id="targetDate" required><br><br>
     <label>End Date:</label>
-    <input type="date" id="endDate"><br><br>
+    <input type="date" id="endDate" style="margin-left:15px"><br><br>
     <button type="submit">Save</button>
 </form>
 
@@ -163,6 +164,7 @@
     }
 
     fetchTodos();
-  </script>
+
+</script>
 </body>
 </html>
